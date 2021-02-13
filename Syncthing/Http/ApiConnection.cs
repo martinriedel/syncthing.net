@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Syncthing.Exceptions;
 using Syncthing.Helpers;
-using Syncthing.Models.Request;
 
 namespace Syncthing.Http
 {
@@ -20,7 +19,7 @@ namespace Syncthing.Http
         /// Initializes a new instance of the <see cref="ApiConnection"/> class.
         /// </summary>
         /// <param name="connection">A connection for making HTTP requests</param>
-        protected ApiConnection(IConnection connection)
+        public ApiConnection(IConnection connection)
         {
             Ensure.ArgumentNotNull(connection, nameof(connection));
 

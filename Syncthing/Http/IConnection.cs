@@ -9,7 +9,7 @@ namespace Syncthing.Http
     /// <summary>
     /// A connection for making HTTP requests against URI endpoints.
     /// </summary>
-    public interface IConnection : IApiInfoProvider
+    public interface IConnection
     {
         /// <summary>
         /// Performs an asynchronous HTTP GET request.
