@@ -268,22 +268,22 @@ namespace Syncthing.Http
         /// Base address for the connection.
         /// </summary>
         Uri BaseAddress { get; }
-        //
-        // /// <summary>
-        // /// Gets the <seealso cref="ICredentialStore"/> used to provide credentials for the connection.
-        // /// </summary>
-        // ICredentialStore CredentialStore { get; }
-        //
-        // /// <summary>
-        // /// Gets or sets the credentials used by the connection.
-        // /// </summary>
-        // /// <remarks>
-        // /// You can use this property if you only have a single hard-coded credential. Otherwise, pass in an 
-        // /// <see cref="ICredentialStore"/> to the constructor. 
-        // /// Setting this property will change the <see cref="ICredentialStore"/> to use 
-        // /// the default <see cref="InMemoryCredentialStore"/> with just these credentials.
-        // /// </remarks>
-        // Credentials Credentials { get; set; }
+        
+        /// <summary>
+        /// Gets the <seealso cref="ICredentialStore"/> used to provide credentials for the connection.
+        /// </summary>
+        ICredentialStore CredentialStore { get; }
+        
+        /// <summary>
+        /// Gets or sets the credentials used by the connection.
+        /// </summary>
+        /// <remarks>
+        /// You can use this property if you only have a single hard-coded credential. Otherwise, pass in an 
+        /// <see cref="ICredentialStore"/> to the constructor. 
+        /// Setting this property will change the <see cref="ICredentialStore"/> to use 
+        /// the default <see cref="InMemoryCredentialStore"/> with just these credentials.
+        /// </remarks>
+        Credentials Credentials { get; set; }
 
         /// <summary>
         /// Set the GitHub Api request timeout.

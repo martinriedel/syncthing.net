@@ -1,13 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Syncthing.Authentication;
+﻿using Syncthing.Authentication;
 using Syncthing.Helpers;
 
 namespace Syncthing.Http
 {
     public class Credentials
     {
-        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes"
-            , Justification = "Credentials is immutable")]
         public static readonly Credentials Anonymous = new Credentials();
 
         private Credentials()

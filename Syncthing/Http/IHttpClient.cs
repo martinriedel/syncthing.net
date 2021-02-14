@@ -22,7 +22,7 @@ namespace Syncthing.Http
 
 
         /// <summary>
-        /// Set the GitHub API request timeout.
+        /// Set the request timeout.
         /// </summary>
         /// <param name="timeout">The Timeout value</param>
         void SetRequestTimeout(TimeSpan timeout);

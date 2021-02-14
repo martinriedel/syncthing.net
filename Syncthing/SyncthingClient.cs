@@ -1,4 +1,5 @@
-﻿using Syncthing.Clients;
+﻿using System;
+using Syncthing.Clients;
 using Syncthing.Helpers;
 using Syncthing.Http;
 
@@ -27,5 +28,14 @@ namespace Syncthing
         /// Refer to the API documentation for more information: https://docs.syncthing.net/users/config.html
         /// </remarks>
         public IConfigClient Config { get; private set; }
+        
+        /// <summary>
+        /// The base address of the GitHub API. This defaults to https://api.github.com,
+        /// but you can change it if needed (to talk to a GitHub:Enterprise server for instance).
+        /// </summary>
+        public Uri BaseAddress
+        {
+            get { return Connection.BaseAddress; }
+        }
     }
 }

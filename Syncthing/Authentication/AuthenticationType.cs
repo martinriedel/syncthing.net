@@ -1,7 +1,7 @@
 ﻿namespace Syncthing.Authentication
 {
     /// <summary>
-    /// Authentication protocols supported by the GitHub API
+    /// Authentication protocols. Syncthing uses the X-API-Key header
     /// </summary>
     public enum AuthenticationType
     {

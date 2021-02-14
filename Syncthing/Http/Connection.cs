@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -14,8 +13,6 @@ using Syncthing.Exceptions;
 using System.Runtime.InteropServices;
 #endif
 using Syncthing.Helpers;
-using Syncthing.Models.Request;
-using Syncthing.Models.Response;
 
 namespace Syncthing.Http
 {
@@ -33,17 +30,10 @@ namespace Syncthing.Http
         readonly IHttpClient _httpClient;
 
         /// <summary>
-        /// Creates a new connection instance used to make requests of the GitHub API.
+        /// Creates a new connection instance used to make requests of the Syncthing API.
         /// </summary>
-        /// <remarks>
-        /// See more information regarding User-Agent requirements here: https://developer.github.com/v3/#user-agent-required
-        /// </remarks>
-        /// <param name="productInformation">
-        /// The name (and optionally version) of the product using this library, the name of your GitHub organization, or your GitHub username (in that order of preference). This is sent to the server as part of
-        /// the user agent for analytics purposes, and used by GitHub to contact you if there are problems.
-        /// </param>
         /// <param name="baseAddress">
-        /// The address to point this client to such as https://api.github.com or the URL to a GitHub Enterprise
+        /// The address to point this client to such as https://localhost:8384/
         /// instance</param>
         public Connection(Uri baseAddress)
             : this(baseAddress, _anonymousCredentials)
@@ -51,17 +41,10 @@ namespace Syncthing.Http
         }
 
         /// <summary>
-        /// Creates a new connection instance used to make requests of the GitHub API.
+        /// Creates a new connection instance used to make requests of the Syncthing API.
         /// </summary>
-        /// <remarks>
-        /// See more information regarding User-Agent requirements here: https://developer.github.com/v3/#user-agent-required
-        /// </remarks>
-        /// <param name="productInformation">
-        /// The name (and optionally version) of the product using this library, the name of your GitHub organization, or your GitHub username (in that order of preference). This is sent to the server as part of
-        /// the user agent for analytics purposes, and used by GitHub to contact you if there are problems.
-        /// </param>
         /// <param name="baseAddress">
-        /// The address to point this client to such as https://api.github.com or the URL to a GitHub Enterprise
+        /// The address to point this client to such as https://localhost:8384/
         /// instance</param>
         /// <param name="credentialStore">Provides credentials to the client when making requests</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
@@ -71,16 +54,10 @@ namespace Syncthing.Http
         }
 
         /// <summary>
-        /// Creates a new connection instance used to make requests of the GitHub API.
+        /// Creates a new connection instance used to make requests of the Syncthing API.
         /// </summary>
-        /// <remarks>
-        /// See more information regarding User-Agent requirements here: https://developer.github.com/v3/#user-agent-required
-        /// </remarks>
-        /// The name (and optionally version) of the product using this library, the name of your GitHub organization, or your GitHub username (in that order of preference). This is sent to the server as part of
-        /// the user agent for analytics purposes, and used by GitHub to contact you if there are problems.
-        /// </param>
         /// <param name="baseAddress">
-        /// The address to point this client to such as https://api.github.com or the URL to a GitHub Enterprise
+        /// The address to point this client to such as https://localhost:8384/
         /// instance</param>
         /// <param name="credentialStore">Provides credentials to the client when making requests</param>
         /// <param name="httpClient">A raw <see cref="IHttpClient"/> used to make requests</param>
@@ -104,20 +81,6 @@ namespace Syncthing.Http
             _authenticator = new Authenticator(credentialStore);
             _httpClient = httpClient;
         }
-
-        /// <summary>
-        /// Gets the latest API Info - this will be null if no API calls have been made
-        /// </summary>
-        /// <returns><seealso cref="ApiInfo"/> representing the information returned as part of an Api call</returns>
-        public ApiInfo GetLastApiInfo()
-        {
-            // We've chosen to not wrap the _lastApiInfo in a lock.  Originally the code was returning a reference - so there was a danger of
-            // on thread writing to the object while another was reading.  Now we are cloning the ApiInfo on request - thus removing the need (or overhead)
-            // of putting locks in place.
-            // See https://github.com/octokit/octokit.net/pull/855#discussion_r36774884
-            return _lastApiInfo == null ? null : _lastApiInfo.Clone();
-        }
-        private ApiInfo _lastApiInfo;
 
         public Task<IApiResponse<T>> Get<T>(Uri uri, IDictionary<string, string> parameters, string accepts)
         {
@@ -318,16 +281,11 @@ namespace Syncthing.Http
                 request.Headers["Accept"] = accepts;
             }
 
-            if (!string.IsNullOrEmpty(twoFactorAuthenticationCode))
-            {
-                request.Headers["X-GitHub-OTP"] = twoFactorAuthenticationCode;
-            }
-
             if (body != null)
             {
                 request.Body = body;
-                // Default Content Type per: http://developer.github.com/v3/
-                request.ContentType = contentType ?? "application/x-www-form-urlencoded";
+                // Default Content Type
+                request.ContentType = contentType ?? "application/json";
             }
 
             return Run<T>(request, cancellationToken);
@@ -554,16 +512,11 @@ namespace Syncthing.Http
         {
             await _authenticator.Apply(request).ConfigureAwait(false);
             var response = await _httpClient.Send(request, cancellationToken).ConfigureAwait(false);
-            if (response != null)
-            {
-                // Use the clone method to avoid keeping hold of the original (just in case it effect the lifetime of the whole response
-                _lastApiInfo = response.ApiInfo.Clone();
-            }
             HandleErrors(response);
             return response;
         }
 
-        static readonly Dictionary<HttpStatusCode, Func<IResponse, Exception>> _httpExceptionMap =
+        static readonly Dictionary<HttpStatusCode, Func<IResponse, Exception>> HttpExceptionMap =
             new Dictionary<HttpStatusCode, Func<IResponse, Exception>>
             {
                 { HttpStatusCode.Unauthorized, GetExceptionForUnauthorized },
@@ -574,7 +527,7 @@ namespace Syncthing.Http
         static void HandleErrors(IResponse response)
         {
             Func<IResponse, Exception> exceptionFunc;
-            if (_httpExceptionMap.TryGetValue(response.StatusCode, out exceptionFunc))
+            if (HttpExceptionMap.TryGetValue(response.StatusCode, out exceptionFunc))
             {
                 throw exceptionFunc(response);
             }
@@ -666,7 +619,7 @@ namespace Syncthing.Http
         }
 
         /// <summary>
-        /// Set the GitHub Api request timeout.
+        /// Set the request timeout.
         /// </summary>
         /// <param name="timeout">The Timeout value</param>
         public void SetRequestTimeout(TimeSpan timeout)

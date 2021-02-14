@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
 using Syncthing.Http;
 
 namespace Syncthing.Exceptions
@@ -8,11 +6,6 @@ namespace Syncthing.Exceptions
     /// <summary>
     /// Represents a "Login Attempts Exceeded" response returned from the API.
     /// </summary>
-#if !NO_SERIALIZABLE
-    [Serializable]
-#endif
-    [SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors",
-        Justification = "These exceptions are specific to the GitHub API and not general purpose exceptions")]
     public class LoginAttemptsExceededException : ForbiddenException
     {
         /// <summary>
@@ -38,23 +31,5 @@ namespace Syncthing.Exceptions
         {
             get { return ApiErrorMessageSafe ?? "Maximum number of login attempts exceeded"; }
         }
-
-#if !NO_SERIALIZABLE
-        /// <summary>
-        /// Constructs an instance of LoginAttemptsExceededException
-        /// </summary>
-        /// <param name="info">
-        /// The <see cref="SerializationInfo"/> that holds the
-        /// serialized object data about the exception being thrown.
-        /// </param>
-        /// <param name="context">
-        /// The <see cref="StreamingContext"/> that contains
-        /// contextual information about the source or destination.
-        /// </param>
-        protected LoginAttemptsExceededException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-#endif
     }
 }
