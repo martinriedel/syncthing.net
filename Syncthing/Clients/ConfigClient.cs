@@ -10,7 +10,8 @@ namespace Syncthing.Clients
     {
         public ConfigClient(IApiConnection apiConnection) : base(apiConnection)
         {
-            
+            Folders = new FoldersClient(apiConnection);
+            Devices = new DevicesClient(apiConnection);
         }
 
         /// <summary>
@@ -25,5 +26,8 @@ namespace Syncthing.Clients
         {
             return ApiConnection.Get<Config>(ApiUrls.Config());
         }
+        
+        public IFoldersClient Folders { get; private set; }
+        public IDevicesClient Devices { get; private set; }
     }
 }
