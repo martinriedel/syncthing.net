@@ -15,5 +15,8 @@ namespace Syncthing.Clients
         /// /// <exception cref="ApiException">Thrown when a general API error occurs.</exception>
         /// <returns>A <see cref="Config" /></returns>
         Task<Config> Get();
+        
+        IFoldersClient Folders { get; }
+        IDevicesClient Devices { get; }
     }
 }

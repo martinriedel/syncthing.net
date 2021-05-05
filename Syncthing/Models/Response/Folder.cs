@@ -10,34 +10,34 @@ namespace Syncthing.Models.Response
         /// </summary>
         [JsonProperty("id")]
         public string Id { get; set; }
-        
+
         /// <summary>
         /// The label of a folder is a human readable and descriptive local name.  May be different on each device,
         /// empty, and/or identical to other folder labels. (optional)
         /// </summary>
         [JsonProperty("label")]
         public string Label { get; set; }
-        
+
         /// <summary>
         /// The path to the directory where the folder is stored on this device; not sent to other devices. (mandatory)
         /// </summary>
         [JsonProperty("path")]
         public string Path { get; set; }
-        
+
         /// <summary>
         /// Controls how the folder is handled by Syncthing.
         /// Possible values are from Type <see cref="FolderType"/>. 
         /// </summary>
         [JsonProperty("type")]
         public FolderType Type { get; set; }
-        
+
         /// <summary>
         /// The rescan interval, in seconds. Can be set to zero to disable when external plugins are used to trigger
         /// rescans.
         /// </summary>
         [JsonProperty("rescanIntervalS")]
         public int RescanIntervalS { get; set; }
-        
+
         /// <summary>
         /// If enabled this detects changes to files in the folder and scans them.
         /// </summary>
@@ -56,13 +56,13 @@ namespace Syncthing.Models.Response
         /// </summary>
         [JsonProperty("ignorePerms")]
         public bool IgnorePerms { get; set; }
-        
+
         /// <summary>
         /// Automatically correct UTF-8 normalization errors found in file names.
         /// </summary>
         [JsonProperty("autoNormalize")]
         public bool AutoNormalize { get; set; }
-        
+
         /// <summary>
         /// All mentioned devices are those that will be sharing the folder in question.
         /// </summary>

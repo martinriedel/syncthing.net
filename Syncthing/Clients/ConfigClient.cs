@@ -6,9 +6,9 @@ using Syncthing.Models.Response;
 
 namespace Syncthing.Clients
 {
-    public class ConfigClient : ApiClient, IConfigClient
+    internal class ConfigClient : ApiClient, IConfigClient
     {
-        public ConfigClient(IApiConnection apiConnection) : base(apiConnection)
+        internal ConfigClient(IApiConnection apiConnection) : base(apiConnection)
         {
             Folders = new FoldersClient(apiConnection);
             Devices = new DevicesClient(apiConnection);
@@ -22,12 +22,13 @@ namespace Syncthing.Clients
         /// </remarks>
         /// <exception cref="ApiException">Thrown when a general API error occurs.</exception>
         /// <returns>A <see cref="Config" /></returns>
-        public Task<Config> Get()
+        public async Task<Config> Get()
         {
-            return ApiConnection.Get<Config>(ApiUrls.Config());
+            return await ApiConnection.Get<Config>(ApiUrls.Config());
         }
-        
-        public IFoldersClient Folders { get; private set; }
-        public IDevicesClient Devices { get; private set; }
+
+
+        public IFoldersClient Folders { get; }
+        public IDevicesClient Devices { get; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Net;
 using System.Net.Http;
@@ -9,10 +10,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Syncthing.Authentication;
 using Syncthing.Exceptions;
+using Syncthing.Helpers;
 #if !HAS_ENVIRONMENT
 using System.Runtime.InteropServices;
 #endif
-using Syncthing.Helpers;
 
 namespace Syncthing.Http
 {
@@ -47,7 +48,7 @@ namespace Syncthing.Http
         /// The address to point this client to such as https://localhost:8384/
         /// instance</param>
         /// <param name="credentialStore">Provides credentials to the client when making requests</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public Connection(Uri baseAddress, ICredentialStore credentialStore)
             : this(baseAddress, credentialStore, new HttpClientAdapter(HttpMessageHandlerFactory.CreateDefault))
         {
@@ -86,10 +87,12 @@ namespace Syncthing.Http
         {
             Ensure.ArgumentNotNull(uri, nameof(uri));
 
-            return SendData<T>(uri.ApplyParameters(parameters), HttpMethod.Get, null, accepts, null, CancellationToken.None);
+            return SendData<T>(uri.ApplyParameters(parameters), HttpMethod.Get, null, accepts, null,
+                CancellationToken.None);
         }
 
-        public Task<IApiResponse<T>> Get<T>(Uri uri, IDictionary<string, string> parameters, string accepts, CancellationToken cancellationToken)
+        public Task<IApiResponse<T>> Get<T>(Uri uri, IDictionary<string, string> parameters, string accepts,
+            CancellationToken cancellationToken)
         {
             Ensure.ArgumentNotNull(uri, nameof(uri));
 
@@ -129,7 +132,8 @@ namespace Syncthing.Http
         {
             Ensure.ArgumentNotNull(uri, nameof(uri));
 
-            var response = await SendData<object>(uri, HttpMethod.Post, null, null, null, CancellationToken.None).ConfigureAwait(false);
+            var response = await SendData<object>(uri, HttpMethod.Post, null, null, null, CancellationToken.None)
+                .ConfigureAwait(false);
             return response.HttpResponse.StatusCode;
         }
 
@@ -137,7 +141,8 @@ namespace Syncthing.Http
         {
             Ensure.ArgumentNotNull(uri, nameof(uri));
 
-            var response = await SendData<object>(uri, HttpMethod.Post, body, accepts, null, CancellationToken.None).ConfigureAwait(false);
+            var response = await SendData<object>(uri, HttpMethod.Post, body, accepts, null, CancellationToken.None)
+                .ConfigureAwait(false);
             return response.HttpResponse.StatusCode;
         }
 
@@ -156,12 +161,14 @@ namespace Syncthing.Http
             return SendData<T>(uri, HttpMethod.Post, body, accepts, contentType, CancellationToken.None);
         }
 
-        public Task<IApiResponse<T>> Post<T>(Uri uri, object body, string accepts, string contentType, IDictionary<string, string> parameters)
+        public Task<IApiResponse<T>> Post<T>(Uri uri, object body, string accepts, string contentType,
+            IDictionary<string, string> parameters)
         {
             Ensure.ArgumentNotNull(uri, nameof(uri));
             Ensure.ArgumentNotNull(body, nameof(body));
 
-            return SendData<T>(uri.ApplyParameters(parameters), HttpMethod.Post, body, accepts, contentType, CancellationToken.None);
+            return SendData<T>(uri.ApplyParameters(parameters), HttpMethod.Post, body, accepts, contentType,
+                CancellationToken.None);
         }
 
         /// <summary>
@@ -175,13 +182,15 @@ namespace Syncthing.Http
         /// <param name="contentType">Specifies the media type of the request body</param>
         /// <param name="twoFactorAuthenticationCode">Two Factor Authentication Code</param>
         /// <returns><seealso cref="IResponse"/> representing the received HTTP response</returns>
-        public Task<IApiResponse<T>> Post<T>(Uri uri, object body, string accepts, string contentType, string twoFactorAuthenticationCode)
+        public Task<IApiResponse<T>> Post<T>(Uri uri, object body, string accepts, string contentType,
+            string twoFactorAuthenticationCode)
         {
             Ensure.ArgumentNotNull(uri, nameof(uri));
             Ensure.ArgumentNotNull(body, nameof(body));
             Ensure.ArgumentNotNullOrEmptyString(twoFactorAuthenticationCode, nameof(twoFactorAuthenticationCode));
 
-            return SendData<T>(uri, HttpMethod.Post, body, accepts, contentType, CancellationToken.None, twoFactorAuthenticationCode);
+            return SendData<T>(uri, HttpMethod.Post, body, accepts, contentType, CancellationToken.None,
+                twoFactorAuthenticationCode);
         }
 
         public Task<IApiResponse<T>> Post<T>(Uri uri, object body, string accepts, string contentType, TimeSpan timeout)
@@ -197,7 +206,8 @@ namespace Syncthing.Http
             Ensure.ArgumentNotNull(uri, nameof(uri));
             Ensure.ArgumentNotNull(body, nameof(body));
 
-            return SendData<T>(uri, HttpMethod.Post, body, accepts, contentType, CancellationToken.None, baseAddress: baseAddress);
+            return SendData<T>(uri, HttpMethod.Post, body, accepts, contentType, CancellationToken.None,
+                baseAddress: baseAddress);
         }
 
         public Task<IApiResponse<T>> Put<T>(Uri uri, object body)
@@ -249,7 +259,8 @@ namespace Syncthing.Http
                 Timeout = timeout
             };
 
-            return SendDataInternal<T>(body, accepts, contentType, cancellationToken, twoFactorAuthenticationCode, request);
+            return SendDataInternal<T>(body, accepts, contentType, cancellationToken, twoFactorAuthenticationCode,
+                request);
         }
 
         Task<IApiResponse<T>> SendData<T>(
@@ -271,10 +282,12 @@ namespace Syncthing.Http
                 Endpoint = uri
             };
 
-            return SendDataInternal<T>(body, accepts, contentType, cancellationToken, twoFactorAuthenticationCode, request);
+            return SendDataInternal<T>(body, accepts, contentType, cancellationToken, twoFactorAuthenticationCode,
+                request);
         }
 
-        Task<IApiResponse<T>> SendDataInternal<T>(object body, string accepts, string contentType, CancellationToken cancellationToken, string twoFactorAuthenticationCode, Request request)
+        Task<IApiResponse<T>> SendDataInternal<T>(object body, string accepts, string contentType,
+            CancellationToken cancellationToken, string twoFactorAuthenticationCode, Request request)
         {
             if (!string.IsNullOrEmpty(accepts))
             {
@@ -321,7 +334,9 @@ namespace Syncthing.Http
             Ensure.ArgumentNotNull(uri, nameof(uri));
             Ensure.ArgumentNotNull(accepts, nameof(accepts));
 
-            var response = await SendData<object>(uri, new HttpMethod("PATCH"), null, accepts, null, CancellationToken.None).ConfigureAwait(false);
+            var response =
+                await SendData<object>(uri, new HttpMethod("PATCH"), null, accepts, null, CancellationToken.None)
+                    .ConfigureAwait(false);
             return response.HttpResponse.StatusCode;
         }
 
@@ -355,7 +370,8 @@ namespace Syncthing.Http
             Ensure.ArgumentNotNull(uri, nameof(uri));
             Ensure.ArgumentNotNull(accepts, nameof(accepts));
 
-            var response = await SendData<object>(uri, HttpMethod.Put, null, accepts, null, CancellationToken.None).ConfigureAwait(false);
+            var response = await SendData<object>(uri, HttpMethod.Put, null, accepts, null, CancellationToken.None)
+                .ConfigureAwait(false);
             return response.HttpResponse.StatusCode;
         }
 
@@ -388,7 +404,8 @@ namespace Syncthing.Http
         {
             Ensure.ArgumentNotNull(uri, nameof(uri));
 
-            var response = await SendData<object>(uri, HttpMethod.Delete, null, null, null, CancellationToken.None, twoFactorAuthenticationCode).ConfigureAwait(false);
+            var response = await SendData<object>(uri, HttpMethod.Delete, null, null, null, CancellationToken.None,
+                twoFactorAuthenticationCode).ConfigureAwait(false);
             return response.HttpResponse.StatusCode;
         }
 
@@ -426,7 +443,8 @@ namespace Syncthing.Http
             Ensure.ArgumentNotNull(uri, nameof(uri));
             Ensure.ArgumentNotNull(accepts, nameof(accepts));
 
-            var response = await SendData<object>(uri, HttpMethod.Delete, data, accepts, null, CancellationToken.None).ConfigureAwait(false);
+            var response = await SendData<object>(uri, HttpMethod.Delete, data, accepts, null, CancellationToken.None)
+                .ConfigureAwait(false);
             return response.HttpResponse.StatusCode;
         }
 
@@ -519,9 +537,9 @@ namespace Syncthing.Http
         static readonly Dictionary<HttpStatusCode, Func<IResponse, Exception>> HttpExceptionMap =
             new Dictionary<HttpStatusCode, Func<IResponse, Exception>>
             {
-                { HttpStatusCode.Unauthorized, GetExceptionForUnauthorized },
-                { HttpStatusCode.Forbidden, GetExceptionForForbidden },
-                { HttpStatusCode.NotFound, response => new NotFoundException(response) }
+                {HttpStatusCode.Unauthorized, GetExceptionForUnauthorized},
+                {HttpStatusCode.Forbidden, GetExceptionForForbidden},
+                {HttpStatusCode.NotFound, response => new NotFoundException(response)}
             };
 
         static void HandleErrors(IResponse response)
@@ -532,7 +550,7 @@ namespace Syncthing.Http
                 throw exceptionFunc(response);
             }
 
-            if ((int)response.StatusCode >= 400)
+            if ((int) response.StatusCode >= 400)
             {
                 throw new ApiException(response);
             }
@@ -570,6 +588,7 @@ namespace Syncthing.Http
         }
 
         private static string _platformInformation;
+
         static string GetPlatformInformation()
         {
             if (string.IsNullOrEmpty(_platformInformation))
@@ -587,7 +606,7 @@ namespace Syncthing.Http
                         Environment.OSVersion.Version.ToString(3),
                         Environment.Is64BitOperatingSystem ? "amd64" : "x86"
 #endif
-                        );
+                    );
                 }
                 catch
                 {
@@ -604,6 +623,7 @@ namespace Syncthing.Http
         }
 
         private static string _versionInformation;
+
         static string GetVersionInformation()
         {
             if (string.IsNullOrEmpty(_versionInformation))
